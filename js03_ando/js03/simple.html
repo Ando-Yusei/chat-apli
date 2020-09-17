@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="css/style.css">
+<title>症状相談アプリ</title>
+</head>
+<body>
+  <h2><i class="far fa-lightbulb"></i><span>症状相談チャット</span></h2>
+<div class="container">
+
+
+  
+
+
+
+
+<div>
+    <ul class="charaset">
+        <li class="imgs" data-img="0">
+          <img src="imgs/golila.png" width="300" class="iconimage">
+        </li>
+        <li class="imgs" data-img="1">
+          <img src="imgs/kanja.png" width="280" class="iconimage">
+        </li>
+        <li class="imgs" data-img="2">
+          <img src="imgs/kanja2.png" width="200" class="iconimage">
+        </li>
+
+    </ul>
+</div>
+<div>
+    <div>名前:<input type="text" placeholder="仮名で構いません" id="name"></div>
+ 
+    
+
+    <div>
+        <textarea id="text" cols="30" rows="10"></textarea>
+        <button id="send">送信</button>
+    </div>
+    <div id="output" style="height:300px;overflow: auto; border: 10px solid gray;"></div>
+</div>
+</div>
+  
+<!--/ コンテンツ表示画面 -->
+
+
+
+<!-- JQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<!-- JQuery -->
+
+
+<!--** 以下Firebase **-->
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/7.20.0/firebase.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+
+ <!-- Previously loaded Firebase SDKs -->
+
+  <!-- Initialize Firebase -->
+  <script src="/__/firebase/init.js"></script>
+
+
+<script>
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "***",
+    authDomain: "dev17-7684a.firebaseapp.com",
+    databaseURL: "https://dev17-7684a.firebaseio.com",
+    projectId: "dev17-7684a",
+    storageBucket: "dev17-7684a.appspot.com",
+    messagingSenderId: "1034991447229",
+    appId: "1:1034991447229:web:6e96e72d44b51a1ec75bd4"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const ref = firebase.database().ref();//.ref=ユニークキーを自動でふってください
+
+//アイコンを処理
+let d=0;
+const img=["golila.png","kanja.png","kanja2.png"]
+$(".imgs").on("click",function(){
+    d=$(this).attr("data-img");
+    
+});
+
+
+//関数定義
+function send(){
+    let now = new Date();
+    let hour = now.getHours();
+    let min = now.getMinutes();
+    const time = +hour+":"+min;
+    const name = $("#name").val();
+    const text  = $("#text").val();
+    // const img  = $("#img").val();¥
+    const msg = {
+        name:name,
+        text:text,
+        time:time,
+        icon:d
+    };
+    console.log(msg);
+    ref.push(msg);  //set=決まった名前、push=ユニーク
+    }
+
+
+
+
+//文字を送信
+  $("#send").on("click",function(){
+    send();
+ 
+  });
+
+  //受信処理
+  ref.on("child_added",function(data){
+      const v = data.val(); //送信されたオブジェクトを取得
+      const k = data.key;  //ユニークキーの取得
+      console.log(v.icon);
+      const html = '<p>'+v.name+'<br>'+v.text+'<br>'+v.time+'<br>'+'<img src="imgs/'+img[v.icon]+'" width="50">'+'</p>';
+    //   
+      $("#output").append(html);
+
+    let h = $("#output").get(0).scrollHeight;
+    $("#output").scrollTop(h);
+  });
+
+//イベント情報取得
+    $("#text").on("keydown",function(e){
+        console.log(e);
+        if(e.keyCode == 13){
+        send();
+        }
+    });
+
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
